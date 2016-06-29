@@ -34,7 +34,10 @@ struct PhysicsCategory {
 
 // In this example the Player object only collides with the ground. Block and Coin objects 
 // will pass through the player. The Player object generates contact messages when it 
-// makes contact with Coins, and Blocks. 
+// makes contact with Coins, and Blocks.
+
+// Look through the comments in the code blocks below to see how the PhysicsCategory 
+// is used to set contacts and collisions.
 
 
 
@@ -46,6 +49,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player: SKSpriteNode!
     var touchDown = false
     var jetpackEmitter: SKEmitterNode!
+    
+    
+    
+    // Creates blocks
     
     func createBlock() {
         let blockSize = CGSize(width: 40, height: 40)
@@ -73,6 +80,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
+    // Maks coins
+    
     func makeCoin() {
         let coinSize = CGSize(width: 20, height: 20)
         let coin = SKSpriteNode(color: UIColor.yellowColor(), size: coinSize)
@@ -99,6 +108,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
+    
+    // The ground
+    
     func setupGround() {
         let groundSize = CGSize(width: view!.frame.width, height: 40)
         ground = SKSpriteNode(color: UIColor.brownColor(), size: groundSize)
@@ -117,6 +129,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(ground)
     }
     
+    
+    
+    // The Player
     
     func setupPlayer() {
         let playerSize = CGSize(width: 20, height: 40)
@@ -137,6 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jetpackEmitter = SKEmitterNode(fileNamed: "JetpackEmitter")
         jetpackEmitter.targetNode = self
         jetpackEmitter.zPosition = -1
+        jetpackEmitter.numParticlesToEmit = 1 // Shut off the emitter
         player.addChild(jetpackEmitter)
         
         addChild(player)
@@ -145,12 +161,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        
+        // Setup the ground object 
+        
         setupGround()
         
         physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
         physicsWorld.contactDelegate = self
         
-        //
+        // Setup the player object
         
         setupPlayer()
         
