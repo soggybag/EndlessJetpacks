@@ -14,11 +14,12 @@ import SpriteKit
 // These physics categoriesa are also used to generate collisions 
 // and contacts in an easy and intuitive way, see comments below.
 struct PhysicsCategory {
-    static let None:    UInt32 = 0          // 0000
-    static let Player:  UInt32 = 0b1        // 0001
-    static let Block:   UInt32 = 0b10       // 0010
-    static let Coin:    UInt32 = 0b100      // 0100
-    static let Floor:   UInt32 = 0b1000     // 1000
+    static let None:    UInt32 = 0          // 00000
+    static let Player:  UInt32 = 0b1        // 00001
+    static let Block:   UInt32 = 0b10       // 00010
+    static let Coin:    UInt32 = 0b100      // 00100
+    static let Floor:   UInt32 = 0b1000     // 01000
+    static let PowerUp: UInt32 = 0b10000    // 10000
 }
 
 // NOTE: Remember a Category is a type of thing in your physics world. This example 
@@ -49,7 +50,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player: SKSpriteNode!
     var touchDown = false
     var jetpackEmitter: SKEmitterNode!
+    var scoreLabel: SKLabelNode!
     
+    var coinsCollected: Int = 0 {
+        didSet {
+            scoreLabel.text = "\(coinsCollected)"
+        }
+    }
     
     
     // Creates blocks
@@ -123,7 +130,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // The ground will contact nothing, and collide with the player.
         ground.physicsBody?.categoryBitMask = PhysicsCategory.Floor
-        ground.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        ground.physicsBody?.contactTestBitMask = PhysicsCategory.Player
         ground.physicsBody?.collisionBitMask = PhysicsCategory.Player
         
         addChild(ground)
@@ -159,8 +166,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    
+    
+    
+    
+    func setupScoreLabel() {
+        scoreLabel = SKLabelNode(fontNamed: "Edit Undo BRK")
+        scoreLabel.fontSize = 27
+        scoreLabel.verticalAlignmentMode = .Top
+        scoreLabel.horizontalAlignmentMode = .Left
+        
+        scoreLabel.position.x = 10
+        scoreLabel.position.y = view!.frame.height - 10
+        
+        scoreLabel.text = "0"
+        
+        addChild(scoreLabel)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        
+        
+        
+        let jetpackMan = JetpackMan(texture: SKTexture(imageNamed: "walk-1"))
+        jetpackMan.walk()
+        
+        jetpackMan.position.x = 100
+        jetpackMan.position.y = 100
+        addChild(jetpackMan)
+        
+        
+        
+        
+        // Get the numberic values for Physics categories
+        print(PhysicsCategory.None)
+        print(PhysicsCategory.Block)
+        print(PhysicsCategory.Coin)
+        print(PhysicsCategory.Block | PhysicsCategory.Coin)
         
         // Setup the ground object 
         
@@ -169,9 +219,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
         physicsWorld.contactDelegate = self
         
+        
         // Setup the player object
         
         setupPlayer()
+        
+        
+        // MARK: Setup score label
+        
+        setupScoreLabel()
+        
         
         // Mark: Make Blocks
         
@@ -183,6 +240,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let sequence = SKAction.sequence([delay, makeBlock])
         let repeatBlocks = SKAction.repeatActionForever(sequence)
         runAction(repeatBlocks)
+        
         
         // MARK: Make Coins
         
@@ -199,7 +257,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
+    
+    
+    /** Makes a particle effect at the position of a coin that is picked up. */
+    
+    func makeCoinPoofAtPoint(point: CGPoint) {
+        if let poof = SKEmitterNode(fileNamed: "CoinPoof") {
+            addChild(poof)
+            poof.position = point
+            let wait = SKAction.waitForDuration(1)
+            let remove = SKAction.removeFromParent()
+            let seq = SKAction.sequence([wait, remove])
+            poof.runAction(seq)
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    /** Removes physics objects that have been marked for removal. */
+    
     // MARK: Physics Contact
+    
+    var physicsObjectsToRemove = [SKNode]()
     
     func didBeginContact(contact: SKPhysicsContact) {
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
@@ -208,10 +291,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("Player Hit Block")
         } else if collision == PhysicsCategory.Coin | PhysicsCategory.Player {
             print("Player Hit Coin")
+            coinsCollected += 1
+            
+            if contact.bodyA.node!.name == "coin" {
+                makeCoinPoofAtPoint(contact.bodyA.node!.position)
+                physicsObjectsToRemove.append(contact.bodyA.node!)
+            } else {
+                makeCoinPoofAtPoint(contact.bodyB.node!.position)
+                physicsObjectsToRemove.append(contact.bodyB.node!)
+            }
+        } else if collision == PhysicsCategory.Player | PhysicsCategory.Floor {
+            print("**** Player hit floor ****")
         }
     }
     
     
+    override func didSimulatePhysics() {
+        for node in physicsObjectsToRemove {
+            node.removeFromParent()
+        }
+    }
+
+
     
     
     
@@ -246,4 +347,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.physicsBody?.applyForce(upVector)
         }
     }
+    
+    
 }
