@@ -7,19 +7,28 @@
 //
 
 import SpriteKit
+import GameplayKit
 
+
+
+
+// ------------------------------------------------
+
+// MARK: Physics Category
 
 // This struct holds all physics categories
 // Using a struct like this allows you to give each category a name.
 // These physics categoriesa are also used to generate collisions 
 // and contacts in an easy and intuitive way, see comments below.
 struct PhysicsCategory {
-    static let None:    UInt32 = 0          // 00000
-    static let Player:  UInt32 = 0b1        // 00001
-    static let Block:   UInt32 = 0b10       // 00010
-    static let Coin:    UInt32 = 0b100      // 00100
-    static let Floor:   UInt32 = 0b1000     // 01000
-    static let PowerUp: UInt32 = 0b10000    // 10000
+    static let None:    UInt32 = 0          // 000000
+    static let Player:  UInt32 = 0b1        // 000001
+    static let Block:   UInt32 = 0b10       // 000010
+    static let Coin:    UInt32 = 0b100      // 000100
+    static let Floor:   UInt32 = 0b1000     // 001000
+    static let PowerUp: UInt32 = 0b10000    // 010000
+    static let Ball:    UInt32 = 0b100000   // 100000
+    // 00000000000000000000000000000000     // 000101
 }
 
 // NOTE: Remember a Category is a type of thing in your physics world. This example 
@@ -44,6 +53,8 @@ struct PhysicsCategory {
 
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    var screenWidth: CGFloat! = nil
     
     var ground: SKSpriteNode!
     var groundHeight: CGFloat = 40
@@ -156,6 +167,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody?.collisionBitMask    = PhysicsCategory.Floor
         player.physicsBody?.contactTestBitMask  = PhysicsCategory.Block | PhysicsCategory.Coin
         
+        player.physicsBody?.linearDamping = 0.21
+        
         jetpackEmitter = SKEmitterNode(fileNamed: "JetpackEmitter")
         jetpackEmitter.targetNode = self
         jetpackEmitter.zPosition = -1
@@ -185,53 +198,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    
-    
-    
-    
-    
-    
-    override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
-        
-        
-        
+
+    func setupJetpackman() {
         let jetpackMan = JetpackMan(texture: SKTexture(imageNamed: "walk-1"))
         jetpackMan.walk()
         
         jetpackMan.position.x = 100
         jetpackMan.position.y = 100
         addChild(jetpackMan)
-        
-        
-        
-        
-        // Get the numberic values for Physics categories
-        print(PhysicsCategory.None)
-        print(PhysicsCategory.Block)
-        print(PhysicsCategory.Coin)
-        print(PhysicsCategory.Block | PhysicsCategory.Coin)
-        
-        // Setup the ground object 
-        
-        setupGround()
-        
-        physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
-        physicsWorld.contactDelegate = self
-        
-        
-        // Setup the player object
-        
-        setupPlayer()
-        
-        
-        // MARK: Setup score label
-        
-        setupScoreLabel()
-        
-        
+    }
+    
+    
+    
+    func startblockGenerator() {
         // Mark: Make Blocks
-        
         let makeBlock = SKAction.runBlock {
             self.createBlock()
         }
@@ -240,10 +220,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let sequence = SKAction.sequence([delay, makeBlock])
         let repeatBlocks = SKAction.repeatActionForever(sequence)
         runAction(repeatBlocks)
-        
-        
+    }
+    
+    
+    func startMakingCoins() {
         // MARK: Make Coins
-        
         let makeCoin = SKAction.runBlock {
             self.makeCoin()
         }
@@ -258,6 +239,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
+    // ------------------------------------------------
+    
+    // MARK: Did move to view
+    
+    override func didMoveToView(view: SKView) {
+        /* Setup your scene here */
+        
+        // Get the numberic values for Physics categories
+        // print(PhysicsCategory.None)
+        // print(PhysicsCategory.Block)
+        // print(PhysicsCategory.Coin)
+        // print(PhysicsCategory.Block | PhysicsCategory.Coin)
+        
+        screenWidth = view.frame.width / 2
+        
+        physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx: 0, dy: -4.5)
+        
+        // Setup Jetpackman
+        setupJetpackman()
+        
+        // Setup the ground object
+        setupGround()
+        
+        // Setup the player object
+        setupPlayer()
+        
+        // MARK: Setup score label
+        setupScoreLabel()
+        
+        // Start making blocks
+        startblockGenerator()
+        
+        // Start making coins
+        startMakingCoins()
+    }
+    
+    
+    
+    
+    // ------------------------------------------------
     
     /** Makes a particle effect at the position of a coin that is picked up. */
     
@@ -276,7 +299,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
-    
+    // ------------------------------------------------
     
     /** Removes physics objects that have been marked for removal. */
     
@@ -315,29 +338,50 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     
     
-    
+    // ------------------------------------------------
     
     // MARK: Touch events
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
         
-        touchDown = true
-        // Start emitting particles
-        jetpackEmitter.numParticlesToEmit = 0 // Emit endless particles
+        // Check all touches
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            if location.x < screenWidth {
+                // This touch was on the left side of the screen
+                touchDown = true
+                // Start emitting particles
+                jetpackEmitter.numParticlesToEmit = 0 // Emit endless particles
+            } else {
+                // This touch was on the right side of the screen
+                
+            }
+        }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch ends */
-        touchDown = false
-        // Stop emitting particles
-        jetpackEmitter.numParticlesToEmit = 1 // Emit maximum of 1 particle
+        // Check all touches
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            if location.x < screenWidth {
+                // This touch was on the left side of the screen
+                touchDown = false
+                // Stop emitting particles
+                jetpackEmitter.numParticlesToEmit = 1 // Emit maximum of 1 particle
+            } else {
+                // This touch was on the right side of the screen
+                
+            }
+        }
     }
     
     
     
+    // ------------------------------------------------
     
-    
+    // MARK: Update
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
