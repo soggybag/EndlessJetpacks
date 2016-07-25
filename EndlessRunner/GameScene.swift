@@ -9,13 +9,12 @@
 import SpriteKit
 import GameplayKit
 
-
-
-
 // TODO: Invent interesting Obstacles...
+//  1) Ground with a pit
+//  2) Narrow passage like Flappy Bird
+//  3) Missiles
+
 // TODO: Add State machine...
-
-
 
 // ------------------------------------------------
 
@@ -479,14 +478,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if collision == PhysicsCategory.Block | PhysicsCategory.Player {
             // MARK: Block hits Player
-            // print("Player Hit Block")
+            print("*** Player Hit Block ***")
             if contact.collisionImpulse > 50 {
                 print("destroy block")
             }
         
         } else if collision == PhysicsCategory.Coin | PhysicsCategory.Player {
             // MARK: Player hits Coin
-            // print("Player Hit Coin")
+            print("*** Player Hit Coin ***")
             coinsCollected += 1
             
             let poofPoint = self.convertPoint(contact.bodyA.node!.position,
@@ -504,17 +503,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
         } else if collision == PhysicsCategory.Player | PhysicsCategory.Floor {
             // MARK: Player hit Floor
-            // print("**** Player hit floor ****")
+            print("*** Player hit floor ***")
             
             
         } else if collision == PhysicsCategory.Player | PhysicsCategory.Enemy {
             // MARK: Player hits Enemy
-            // print("**** Player hit Enemy ****")
+            print("*** Player hit Enemy ***")
             
             
         } else if collision == PhysicsCategory.Bullet | PhysicsCategory.Enemy {
             // MARK: Bullet hits Enemy
-            print("**** Bullet hits Enemy ****")
+            print("*** Bullet hits Enemy ***")
             
             let poofPoint = self.convertPoint(contact.bodyA.node!.position,
                                               fromNode: contact.bodyA.node!.parent!)
@@ -699,6 +698,11 @@ extension GameScene {
             [1,1,1,1,1,1,1],
             [1,1,0,1,0,1,1],
             [1,1,0,0,0,1,1]
+        ]
+        
+        let d = [
+            [1,1,1,1,1,1,0,0,0,0,0,0],
+            [0,0,0,0,0,0,1,1,1,1,1,1]
         ]
     
         let blocks = [a, b, c]
