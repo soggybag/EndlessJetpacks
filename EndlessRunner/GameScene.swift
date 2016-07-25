@@ -10,10 +10,9 @@ import SpriteKit
 import GameplayKit
 
 
-// TODO: Add obstacles to sceneNode and cycle scene nodes.
-// TODO: Switch motion to parent node using convert to point
-// TODO: !? Player moves forward. Objects are created in ahead. Camera follows Player...
-// TODO: Keep track of distance travelled as points
+
+
+// TODO: Invent interesting Obstacles...
 // TODO: Add State machine...
 
 
@@ -631,52 +630,80 @@ extension GameScene {
 
 
 
+
+
 extension GameScene {
     func makeCoinBlock(node: SKNode) {
         let blockNode = SKNode()
         blockNode.name = "coinblock"
         
-        let blocks = [[[1,1,0,0,0,1,1],
-                       [1,1,1,0,1,1,1],
-                       [1,1,1,1,1,1,1],
-                       [1,1,1,1,1,1,1],
-                       [1,1,0,1,0,1,1],
-                       [1,1,0,0,0,1,1]],
-                      
-                      [[1,1,1,0,0,0],
-                       [0,1,1,1,0,0],
-                       [0,0,1,1,1,0],
-                       [0,0,0,1,1,1]],
-                      
-                      [ [0,0,0,1,0,0,0],
-                        [0,0,1,1,1,0,0],
-                        [0,1,1,1,1,1,0],
-                        [1,1,1,1,1,1,1],
-                        [0,1,1,1,1,1,0],
-                        [0,0,1,1,1,0,0],
-                        [0,0,0,1,0,0,0]]
-                      ]
-        
-        let block = blocks[Int(arc4random() % UInt32(blocks.count))]
+        let block = getCoinBlock()
         
         for row in 0 ..< block.count {
             for col in 0 ..< block[row].count {
                 if block[row][col] == 1 {
                     let coin = makeCoin()
-                    coin.position = CGPoint(x: 21 * CGFloat(col), y: 21 * CGFloat(-row))
+                    coin.position = CGPoint(x: 21 * CGFloat(col) + (21/2), y: 21 * CGFloat(-row) - (21/2))
                     blockNode.addChild(coin)
                 }
             }
         }
         
-        
+        let w = CGFloat(block[0].count) * 21
         let h = CGFloat(block.count) * 21
-        let y = CGFloat(arc4random() % UInt32(view!.frame.height - h - groundHeight - 21)) + h + groundHeight
+        let rangeY = view!.frame.height - groundHeight - 20 - h
+        let y = CGFloat(arc4random() % UInt32(rangeY)) + h + groundHeight
+        
+        /*
+        let testSprite = SKSpriteNode(color: UIColor(white: 1, alpha: 0.5), size: CGSize(width: w, height: h))
+        testSprite.anchorPoint = CGPoint(x: 0, y: 1)
+        blockNode.addChild(testSprite)
+        */
         
         blockNode.position.x = 100
         blockNode.position.y = y
         
         node.addChild(blockNode)
+    }
+}
+
+
+
+
+
+extension GameScene {
+    func getCoinBlock() -> [[Int]] {
+        
+        // Need to separate these nested arrays to avoid long compile times...
+        let a = [
+            [1,1,1,0,0,0],
+            [0,1,1,1,0,0],
+            [0,0,1,1,1,0],
+            [0,0,0,1,1,1]
+        ]
+        
+        let b = [
+            [0,0,0,1,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,1,0,0,0]
+        ]
+        
+        let c = [
+            [1,1,0,0,0,1,1],
+            [1,1,1,0,1,1,1],
+            [1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1],
+            [1,1,0,1,0,1,1],
+            [1,1,0,0,0,1,1]
+        ]
+    
+        let blocks = [a, b, c]
+        
+        return blocks[Int(arc4random() % UInt32(blocks.count))]
     }
 }
 
