@@ -5,6 +5,8 @@ This example is a proof of concept/starter projects for students wanting to crea
 [Punch Quest](http://www.punchquest.com), and 
 [similar games](http://appcrawlr.com/ios-apps/best-apps-similar-to-jetpack-joyride). 
 
+![screenshot](screenshot.gif)
+
 This example lacks all of the power ups, acheivements, and other features that make these games great. The example presented
 here shows a core mechanic that allows a player object to move forward through an ever changing landscape with various 
 obstacles. 
