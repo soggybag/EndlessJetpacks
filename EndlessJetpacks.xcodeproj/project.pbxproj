@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		D82ECBD01D42CB4A00EE70BF /* EnemyDestroyed.sks in Resources */ = {isa = PBXBuildFile; fileRef = D82ECBCF1D42CB4A00EE70BF /* EnemyDestroyed.sks */; };
+		D834355C1D5190EA0006784E /* PhysicsCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D834355B1D5190EA0006784E /* PhysicsCategory.swift */; };
+		D834355E1D5191E50006784E /* Ground.swift in Sources */ = {isa = PBXBuildFile; fileRef = D834355D1D5191E50006784E /* Ground.swift */; };
 		D83F73BA1D249000001409C4 /* editundo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D83F73B91D249000001409C4 /* editundo.ttf */; };
 		D83F73E41D25B50C001409C4 /* CoinPoof.sks in Resources */ = {isa = PBXBuildFile; fileRef = D83F73E31D25B50C001409C4 /* CoinPoof.sks */; };
 		D8EA55811D22EEE8003979E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EA55801D22EEE8003979E3 /* AppDelegate.swift */; };
@@ -18,13 +20,14 @@
 		D8EA558F1D22EEE8003979E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8EA558D1D22EEE8003979E3 /* LaunchScreen.storyboard */; };
 		D8EA55A61D233017003979E3 /* JetpackEmitter.sks in Resources */ = {isa = PBXBuildFile; fileRef = D8EA55A41D233017003979E3 /* JetpackEmitter.sks */; };
 		D8EA55A71D233017003979E3 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = D8EA55A51D233017003979E3 /* spark.png */; };
-		D8EA55A91D23312A003979E3 /* MyParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = D8EA55A81D23312A003979E3 /* MyParticle.sks */; };
 		D8EA55AB1D23382A003979E3 /* coin.png in Resources */ = {isa = PBXBuildFile; fileRef = D8EA55AA1D23382A003979E3 /* coin.png */; };
 		D8EB0F2F1D25E5BA00B6E25E /* JetpackMan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EB0F2E1D25E5BA00B6E25E /* JetpackMan.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D82ECBCF1D42CB4A00EE70BF /* EnemyDestroyed.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EnemyDestroyed.sks; sourceTree = "<group>"; };
+		D834355B1D5190EA0006784E /* PhysicsCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysicsCategory.swift; sourceTree = "<group>"; wrapsLines = 0; };
+		D834355D1D5191E50006784E /* Ground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ground.swift; sourceTree = "<group>"; };
 		D83F73B91D249000001409C4 /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = editundo.ttf; sourceTree = "<group>"; };
 		D83F73E31D25B50C001409C4 /* CoinPoof.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = CoinPoof.sks; sourceTree = "<group>"; };
 		D8EA557D1D22EEE8003979E3 /* EndlessJetpacks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EndlessJetpacks.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,7 +40,6 @@
 		D8EA55901D22EEE8003979E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D8EA55A41D233017003979E3 /* JetpackEmitter.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = JetpackEmitter.sks; sourceTree = "<group>"; };
 		D8EA55A51D233017003979E3 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
-		D8EA55A81D23312A003979E3 /* MyParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MyParticle.sks; sourceTree = "<group>"; };
 		D8EA55AA1D23382A003979E3 /* coin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coin.png; sourceTree = "<group>"; };
 		D8EB0F2E1D25E5BA00B6E25E /* JetpackMan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JetpackMan.swift; path = ../JetpackMan.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -76,12 +78,13 @@
 			children = (
 				D8EA55801D22EEE8003979E3 /* AppDelegate.swift */,
 				D8EA55841D22EEE8003979E3 /* GameScene.swift */,
+				D834355D1D5191E50006784E /* Ground.swift */,
+				D834355B1D5190EA0006784E /* PhysicsCategory.swift */,
 				D8EB0F2E1D25E5BA00B6E25E /* JetpackMan.swift */,
 				D83F73E31D25B50C001409C4 /* CoinPoof.sks */,
 				D8EA558D1D22EEE8003979E3 /* LaunchScreen.storyboard */,
 				D8EA55A41D233017003979E3 /* JetpackEmitter.sks */,
 				D82ECBCF1D42CB4A00EE70BF /* EnemyDestroyed.sks */,
-				D8EA55A81D23312A003979E3 /* MyParticle.sks */,
 				D8EA55A51D233017003979E3 /* spark.png */,
 				D8EA55861D22EEE8003979E3 /* GameViewController.swift */,
 				D8EA55881D22EEE8003979E3 /* Main.storyboard */,
@@ -150,7 +153,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8EA55A71D233017003979E3 /* spark.png in Resources */,
-				D8EA55A91D23312A003979E3 /* MyParticle.sks in Resources */,
 				D82ECBD01D42CB4A00EE70BF /* EnemyDestroyed.sks in Resources */,
 				D8EA55A61D233017003979E3 /* JetpackEmitter.sks in Resources */,
 				D8EA558F1D22EEE8003979E3 /* LaunchScreen.storyboard in Resources */,
@@ -169,8 +171,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D834355E1D5191E50006784E /* Ground.swift in Sources */,
 				D8EA55851D22EEE8003979E3 /* GameScene.swift in Sources */,
 				D8EA55871D22EEE8003979E3 /* GameViewController.swift in Sources */,
+				D834355C1D5190EA0006784E /* PhysicsCategory.swift in Sources */,
 				D8EA55811D22EEE8003979E3 /* AppDelegate.swift in Sources */,
 				D8EB0F2F1D25E5BA00B6E25E /* JetpackMan.swift in Sources */,
 			);

@@ -9,61 +9,44 @@
 import SpriteKit
 import GameplayKit
 
+
+
 // TODO: Invent interesting Obstacles...
 //  1) Ground with a pit
 //  2) Narrow passage like Flappy Bird
 //  3) Missiles
+//  4) Breakable items that contain treasure...
 
 // TODO: Add State machine...
 
 // ------------------------------------------------
 
-// MARK: Physics Category
-
-// This struct holds all physics categories
-// Using a struct like this allows you to give each category a name.
-// These physics categoriesa are also used to generate collisions 
-// and contacts in an easy and intuitive way, see comments below.
-struct PhysicsCategory {
-    static let None:    UInt32 = 0          // 0000000
-    static let Player:  UInt32 = 0b1        // 0000001    00001
-    static let Block:   UInt32 = 0b10       // 0000010
-    static let Coin:    UInt32 = 0b100      // 0000100    00100
-    static let Floor:   UInt32 = 0b1000     // 0001000    00101
-    static let Enemy:   UInt32 = 0b10000    // 0010000
-    static let Bullet:  UInt32 = 0b100000   // 0100000
-    static let Ceiling: UInt32 = 0b1000000  // 1000000
-    // 00000000000000000000000000000000
-}
-
-// NOTE: Remember a Category is a type of thing in your physics world. This example 
-// contains Blocks (red), Coins (Yellow), Ground (Brown), and Player (Orange)
-
-// Contacts generate a message in didBeginContact that occurs when two objects make contact. 
-// Contacts do produce a physical results, in other words when a contact occurs between two 
-// objects it doen't mean that they bounce or show a physical interaction. 
-
-// Collisions generate physical interaction between objects. If you want an object to
-// bounce or bump or push another object it's collision mask must include the category 
-// of object it will interact with. 
-
-// In this example the Player object only collides with the ground. Block and Coin objects 
-// will pass through the player. The Player object generates contact messages when it 
-// makes contact with Coins, and Blocks.
-
-// Look through the comments in the code blocks below to see how the PhysicsCategory 
-// is used to set contacts and collisions.
 
 
 
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // Set the forward speed of the player
+    var playerSpeed: CGFloat = 40
+    // Set the width of the landscape section
+    let sceneNodeWidth: CGFloat = 800
+    
+    // Height of ground
+    var groundHeight: CGFloat = 40
+    
+    // Set the size for various objects
+    let playerSize = CGSize(width: 20, height: 40)
+    let blockSize = CGSize(width: 40, height: 40)
+    let coinSize = CGSize(width: 20, height: 20)
+    let enemySize = CGSize(width: 40, height: 40)
+    let bulletSize = CGSize(width: 10, height: 10)
+    
     var screenWidth: CGFloat!
     var screenHeight: CGFloat!
     
     var ground: SKSpriteNode!
-    var groundHeight: CGFloat = 40
+    
     var touchDown = false
     
     var player: SKSpriteNode!
@@ -73,13 +56,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var sceneCamera: SKCameraNode!
     
     let sceneNodes = [SKNode(), SKNode()]
-    let sceneNodeWidth: CGFloat = 800
-    
-    let playerSize = CGSize(width: 20, height: 40)
-    let blockSize = CGSize(width: 40, height: 40)
-    let coinSize = CGSize(width: 20, height: 20)
-    let enemySize = CGSize(width: 40, height: 40)
-    let bulletSize = CGSize(width: 10, height: 10)
     
     var coinsCollected: Int = 0 {
         didSet {
@@ -133,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         block.physicsBody!.dynamic = false
         block.physicsBody!.affectedByGravity = false
         
-        // in this game blocks may only contact a player, collide with nothing.
+        // In this game blocks generate a contact with a player, they produce a collision.
         block.physicsBody!.categoryBitMask    = PhysicsCategory.Block
         block.physicsBody!.collisionBitMask   = PhysicsCategory.None
         block.physicsBody!.contactTestBitMask = PhysicsCategory.Player
@@ -152,6 +128,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         enemy.physicsBody = SKPhysicsBody(rectangleOfSize: enemySize)
         enemy.physicsBody!.affectedByGravity = false
         
+        // Enemy objects generate a contact with player and bullet. They do not collide.
         enemy.physicsBody!.categoryBitMask = PhysicsCategory.Enemy
         enemy.physicsBody!.collisionBitMask = PhysicsCategory.None
         enemy.physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Bullet
@@ -174,6 +151,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bullet.physicsBody!.allowsRotation = false
         bullet.physicsBody!.affectedByGravity = false
         
+        // Bullets contact enemys, but do not collide.
         bullet.physicsBody!.categoryBitMask = PhysicsCategory.Bullet
         bullet.physicsBody!.collisionBitMask = PhysicsCategory.None
         bullet.physicsBody!.contactTestBitMask = PhysicsCategory.Enemy
@@ -206,7 +184,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         coin.physicsBody?.affectedByGravity = false
         coin.physicsBody?.dynamic = false
         
-        // Coins collide with nothing and contact only with players
+        // Coins collide with nothing and contact only with players.
         coin.physicsBody?.categoryBitMask   = PhysicsCategory.Coin
         coin.physicsBody?.collisionBitMask  = PhysicsCategory.None
         coin.physicsBody?.contactTestBitMask = PhysicsCategory.Player
@@ -248,6 +226,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceiling.physicsBody!.dynamic = false
         ceiling.physicsBody!.affectedByGravity = false
         
+        // The ceiling collides with the player and does not generate contact.
         ceiling.physicsBody!.categoryBitMask = PhysicsCategory.Ceiling
         ceiling.physicsBody!.collisionBitMask = PhysicsCategory.Player
         ceiling.physicsBody!.contactTestBitMask = PhysicsCategory.None
@@ -270,8 +249,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         player.physicsBody?.affectedByGravity = true // ****
         
-        // The player will collide with the Floor, and make contact with Blocksm and Coins
-        // The | means or. Think of the contactTestBitMask below as saying "Block or Coin"
+        // The player will collide with the Floor, and make contact with Blocks, Enemies and Coins
+        // The | means or. Think of the contactTestBitMask below as saying "Block or Coin or Enemy"
         player.physicsBody?.categoryBitMask     = PhysicsCategory.Player
         player.physicsBody?.collisionBitMask    = PhysicsCategory.Floor | PhysicsCategory.Ceiling
         player.physicsBody?.contactTestBitMask  = PhysicsCategory.Block | PhysicsCategory.Coin | PhysicsCategory.Enemy
@@ -529,6 +508,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    func didEndContact(contact: SKPhysicsContact) {
+        //
+    }
+    
+    
     override func didSimulatePhysics() {
         for node in physicsObjectsToRemove {
             node.removeFromParent()
@@ -595,7 +579,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             lastUpdateTime = currentTime
         }
         
-        player.position.x += 40 * CGFloat(deltaTime)
+        player.position.x += playerSpeed * CGFloat(deltaTime)
         distanceTravelled = Int(player.position.x / 30)
         
         sceneCamera.position.x = player.position.x
@@ -613,8 +597,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 }
 
 
+
+
+
 extension GameScene {
-    // Check position of nodes as camera moves
+    
+    /** 
+    
+    Call this on update to check the position of sceneNodes.
+     When a scene Node has passed the camera view to the left
+     this method moves that scene to the right of the current 
+     scene in view.
+    
+    */
+    
     func scrollSceneNodes() {
         for node in sceneNodes {
             let x = node.position.x - sceneCamera.position.x
@@ -632,6 +628,13 @@ extension GameScene {
 
 
 extension GameScene {
+    
+    /** 
+     
+    Returns a node containing a random block of coin objects.
+     
+    */
+    
     func makeCoinBlock(node: SKNode) {
         let blockNode = SKNode()
         blockNode.name = "coinblock"
@@ -668,12 +671,18 @@ extension GameScene {
 
 
 
-
-
 extension GameScene {
+    
+    /**
+     Returns a random array describing a block of coins.
+    */
+    
     func getCoinBlock() -> [[Int]] {
         
-        // Need to separate these nested arrays to avoid long compile times...
+        // These nested arrays describe the position of coins displayed in blocks. 
+        // A 1 places a coin, a 0 is empty.
+        // (Need to separate these nested arrays to avoid long compile times...)
+        
         let a = [
             [1,1,1,0,0,0],
             [0,1,1,1,0,0],
@@ -705,7 +714,7 @@ extension GameScene {
             [0,0,0,0,0,0,1,1,1,1,1,1]
         ]
     
-        let blocks = [a, b, c]
+        let blocks = [a, b, c, d]
         
         return blocks[Int(arc4random() % UInt32(blocks.count))]
     }
