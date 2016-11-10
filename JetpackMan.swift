@@ -17,9 +17,9 @@ class JetpackMan: SKSpriteNode {
             SKTexture(imageNamed: "walk-3"),
             SKTexture(imageNamed: "walk-4")
         ]
-        let walkCycle = SKAction.animateWithTextures(textures, timePerFrame: 0.2)
-        let walkForever = SKAction.repeatActionForever(walkCycle)
-        runAction(walkForever)
+        let walkCycle = SKAction.animate(with: textures, timePerFrame: 0.2)
+        let walkForever = SKAction.repeatForever(walkCycle)
+        self.run(walkForever)
     }
     
     func run() {

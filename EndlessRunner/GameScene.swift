@@ -35,6 +35,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Height of ground
     var groundHeight: CGFloat = 40
     
+    var gameState: GKStateMachine
+    
     // Set the size for various objects
     let playerSize = CGSize(width: 20, height: 40)
     let blockSize = CGSize(width: 40, height: 40)
@@ -55,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var distanceLabel: SKLabelNode!
     var sceneCamera: SKCameraNode!
     
-    let sceneNodes = [SKNode(), SKNode()]
+    var sceneNodes = [BackgroundSection]()
     
     var coinsCollected: Int = 0 {
         didSet {
@@ -72,11 +74,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
+    // MARK: - Init 
+    
+    override init() {
+        gameState = GKStateMachine(states: [])
+        super.init()
+        
+        
+    }
+    
+    override init(size: CGSize) {
+        gameState = GKStateMachine(states: [])
+        super.init(size: size)
+        
+        
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    func setup() {
+        gameState = GKStateMachine(states: [])
+    }
+    
     
     
     // MARK: Generate Obstacles 
     
-    func generateObstacle(node: SKNode) {
+    func generateObstacle(_ node: SKNode) {
         let n = arc4random() % 3
         switch n {
         case 0:
@@ -99,14 +127,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Creates blocks
     
-    func createBlock(node: SKNode) {
-        let block = SKSpriteNode(color: UIColor.redColor(), size: blockSize)
+    func createBlock(_ node: SKNode) {
+        let block = SKSpriteNode(color: UIColor.red, size: blockSize)
         
         block.position.x = CGFloat(arc4random() % UInt32(sceneNodeWidth - 100)) + 50
         block.position.y = groundHeight + blockSize.height / 2
         
-        block.physicsBody = SKPhysicsBody(rectangleOfSize: blockSize)
-        block.physicsBody!.dynamic = false
+        block.physicsBody = SKPhysicsBody(rectangleOf: blockSize)
+        block.physicsBody!.isDynamic = false
         block.physicsBody!.affectedByGravity = false
         
         // In this game blocks generate a contact with a player, they produce a collision.
@@ -120,12 +148,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Create Enemy
     
-    func createEnemy(node: SKNode) {
-        let enemy = SKSpriteNode(color: UIColor.blueColor(), size: enemySize)
+    func createEnemy(_ node: SKNode) {
+        let enemy = SKSpriteNode(color: UIColor.blue, size: enemySize)
         let y = CGFloat(arc4random() % UInt32(view!.frame.height - groundHeight - enemySize.height)) + groundHeight + enemySize.height
         enemy.position = CGPoint(x: view!.frame.size.width, y: y)
         
-        enemy.physicsBody = SKPhysicsBody(rectangleOfSize: enemySize)
+        enemy.physicsBody = SKPhysicsBody(rectangleOf: enemySize)
         enemy.physicsBody!.affectedByGravity = false
         
         // Enemy objects generate a contact with player and bullet. They do not collide.
@@ -141,13 +169,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Fire Bullet
     
     func fireBullet() {
-        let bullet = SKSpriteNode(color: UIColor.cyanColor(), size: bulletSize)
+        let bullet = SKSpriteNode(color: UIColor.cyan, size: bulletSize)
         
         bullet.position = player.position
         bullet.name = "bullet"
         
-        bullet.physicsBody = SKPhysicsBody(rectangleOfSize: bulletSize)
-        bullet.physicsBody!.dynamic = false
+        bullet.physicsBody = SKPhysicsBody(rectangleOf: bulletSize)
+        bullet.physicsBody!.isDynamic = false
         bullet.physicsBody!.allowsRotation = false
         bullet.physicsBody!.affectedByGravity = false
         
@@ -157,9 +185,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bullet.physicsBody!.contactTestBitMask = PhysicsCategory.Enemy
         
         let dx = view!.frame.width / 2 + 100
-        let moveAction = SKAction.moveByX(dx, y: 0, duration: 1)
+        let moveAction = SKAction.moveBy(x: dx, y: 0, duration: 1)
         let removeAction = SKAction.removeFromParent()
-        bullet.runAction(SKAction.sequence([moveAction, removeAction]))
+        bullet.run(SKAction.sequence([moveAction, removeAction]))
         
         addChild(bullet)
     }
@@ -169,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Create Coin
     
     func getCoin() -> SKSpriteNode {
-        let coin = SKSpriteNode(color: UIColor.yellowColor(), size: coinSize)
+        let coin = SKSpriteNode(color: UIColor.yellow, size: coinSize)
         coin.name = "coin"
         return coin
     }
@@ -180,9 +208,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         coin.position.x = view!.frame.size.width
         coin.position.y = CGFloat(arc4random() % 14) * coinSize.width + 100
         
-        coin.physicsBody = SKPhysicsBody(rectangleOfSize: coin.size)
+        coin.physicsBody = SKPhysicsBody(rectangleOf: coin.size)
         coin.physicsBody?.affectedByGravity = false
-        coin.physicsBody?.dynamic = false
+        coin.physicsBody?.isDynamic = false
         
         // Coins collide with nothing and contact only with players.
         coin.physicsBody?.categoryBitMask   = PhysicsCategory.Coin
@@ -199,12 +227,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func makeGround() -> SKSpriteNode {
         let groundSize = CGSize(width: sceneNodeWidth, height: groundHeight)
-        ground = SKSpriteNode(color: UIColor.brownColor(), size: groundSize)
+        ground = SKSpriteNode(color: UIColor.brown, size: groundSize)
         ground.position.x = groundSize.width / 2
         ground.position.y = groundSize.height / 2
         
-        ground.physicsBody = SKPhysicsBody(rectangleOfSize: groundSize)
-        ground.physicsBody?.dynamic = false
+        ground.physicsBody = SKPhysicsBody(rectangleOf: groundSize)
+        ground.physicsBody?.isDynamic = false
         ground.physicsBody?.affectedByGravity = false
         
         // The ground will contact nothing, and collide with the player.
@@ -218,12 +246,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func makeCeiling() {
         let ceilingSize = CGSize(width: sceneNodeWidth, height: 40)
-        let ceiling = SKSpriteNode(color: UIColor.purpleColor(), size: ceilingSize)
+        let ceiling = SKSpriteNode(color: UIColor.purple, size: ceilingSize)
         
         ceiling.position.y = view!.frame.height / 2
         
-        ceiling.physicsBody = SKPhysicsBody(rectangleOfSize: ceilingSize)
-        ceiling.physicsBody!.dynamic = false
+        ceiling.physicsBody = SKPhysicsBody(rectangleOf: ceilingSize)
+        ceiling.physicsBody!.isDynamic = false
         ceiling.physicsBody!.affectedByGravity = false
         
         // The ceiling collides with the player and does not generate contact.
@@ -239,12 +267,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Create Player
     
     func setupPlayer() {
-        player = SKSpriteNode(color: UIColor.orangeColor(), size: playerSize)
+        player = SKSpriteNode(color: UIColor.orange, size: playerSize)
         
         player.position.x = view!.frame.size.width / 2
         player.position.y = groundHeight / 2 + playerSize.height / 2
         
-        player.physicsBody = SKPhysicsBody(rectangleOfSize: playerSize)
+        player.physicsBody = SKPhysicsBody(rectangleOf: playerSize)
         player.physicsBody?.allowsRotation = false
         
         player.physicsBody?.affectedByGravity = true // ****
@@ -275,8 +303,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setupLabels() {
         scoreLabel = SKLabelNode(fontNamed: "Edit Undo BRK")
         scoreLabel.fontSize = 27
-        scoreLabel.verticalAlignmentMode = .Top
-        scoreLabel.horizontalAlignmentMode = .Left
+        scoreLabel.verticalAlignmentMode = .top
+        scoreLabel.horizontalAlignmentMode = .left
         
         scoreLabel.position.x = screenWidth / -2 + 10
         scoreLabel.position.y = screenHeight / 2 - 10
@@ -287,8 +315,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         distanceLabel = SKLabelNode(fontNamed: "Edit Undo BRK")
         distanceLabel.fontSize = 27
-        distanceLabel.verticalAlignmentMode = .Top
-        distanceLabel.horizontalAlignmentMode = .Left
+        distanceLabel.verticalAlignmentMode = .top
+        distanceLabel.horizontalAlignmentMode = .left
         
         distanceLabel.position.x = screenWidth / -2 + 10
         distanceLabel.position.y = scoreLabel.position.y - 30
@@ -313,14 +341,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func startMakingCoins() {
         // MARK: Make Coins
-        let makeCoin = SKAction.runBlock {
+        let makeCoin = SKAction.run {
             self.makeCoin()
         }
         
-        let coinDelay = SKAction.waitForDuration(2)
+        let coinDelay = SKAction.wait(forDuration: 2)
         let coinSequence = SKAction.sequence([coinDelay, makeCoin])
-        let repeatCoins = SKAction.repeatActionForever(coinSequence)
-        runAction(repeatCoins)
+        let repeatCoins = SKAction.repeatForever(coinSequence)
+        run(repeatCoins)
     }
     
     
@@ -353,7 +381,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addContentToSceneNode(sceneNodes[1])
     }
     
-    func addContentToSceneNode(node: SKNode) {
+    func addContentToSceneNode(_ node: SKNode) {
         
         let hue = CGFloat(arc4random() % 100) / 100
         let color = UIColor(hue: hue, saturation: 1, brightness: 1, alpha: 0.5)
@@ -361,9 +389,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let sprite = SKSpriteNode(color: color, size: size)
         sprite.anchorPoint = CGPoint(x: 0, y: 0)
         
-        node.childNodeWithName("contentNode")?.removeAllChildren()
-        node.childNodeWithName("contentNode")?.addChild(sprite)
-        generateObstacle(node.childNodeWithName("contentNode")!)
+        node.childNode(withName: "contentNode")?.removeAllChildren()
+        node.childNode(withName: "contentNode")?.addChild(sprite)
+        generateObstacle(node.childNode(withName: "contentNode")!)
         
     }
     
@@ -374,11 +402,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Did move to view
     
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         /* Setup your scene here */
         
         screenWidth = view.frame.width
         screenHeight = view.frame.height
+        
+        let backgroundSize = CGSize(width: sceneNodeWidth, height: screenHeight)
+        let background_1 = BackgroundSection(size: backgroundSize)
+        let background_2 = BackgroundSection(size: backgroundSize)
+        sceneNodes = [background_1, background_2]
+            
+        
+        
         
         // physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
         
@@ -420,25 +456,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /** Makes a particle effect at the position of a coin that is picked up. */
     
-    func makeCoinPoofAtPoint(point: CGPoint) {
+    func makeCoinPoofAtPoint(_ point: CGPoint) {
         if let poof = SKEmitterNode(fileNamed: "CoinPoof") {
             addChild(poof)
             poof.position = point
-            let wait = SKAction.waitForDuration(1)
+            let wait = SKAction.wait(forDuration: 1)
             let remove = SKAction.removeFromParent()
             let seq = SKAction.sequence([wait, remove])
-            poof.runAction(seq)
+            poof.run(seq)
         }
     }
     
     
-    func makeEnemyDestroyedExplosion(point: CGPoint) {
+    func makeEnemyDestroyedExplosion(_ point: CGPoint) {
         if let explosion = SKEmitterNode(fileNamed: "EnemyDestroyed") {
             addChild(explosion)
             explosion.position = point
-            let wait = SKAction.waitForDuration(1)
+            let wait = SKAction.wait(forDuration: 1)
             let removeExplosion = SKAction.removeFromParent()
-            explosion.runAction(SKAction.sequence([wait, removeExplosion]))
+            explosion.run(SKAction.sequence([wait, removeExplosion]))
         }
     }
     
@@ -452,7 +488,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var physicsObjectsToRemove = [SKNode]()
     
-    func didBeginContact(contact: SKPhysicsContact) {
+    func didBegin(_ contact: SKPhysicsContact) {
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         if collision == PhysicsCategory.Block | PhysicsCategory.Player {
@@ -467,8 +503,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("*** Player Hit Coin ***")
             coinsCollected += 1
             
-            let poofPoint = self.convertPoint(contact.bodyA.node!.position,
-                                              fromNode: contact.bodyA.node!.parent!)
+            let poofPoint = self.convert(contact.bodyA.node!.position,
+                                              from: contact.bodyA.node!.parent!)
             
             if contact.bodyA.node!.name == "coin" {
                 makeCoinPoofAtPoint(poofPoint)
@@ -494,8 +530,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // MARK: Bullet hits Enemy
             print("*** Bullet hits Enemy ***")
             
-            let poofPoint = self.convertPoint(contact.bodyA.node!.position,
-                                              fromNode: contact.bodyA.node!.parent!)
+            let poofPoint = self.convert(contact.bodyA.node!.position,
+                                              from: contact.bodyA.node!.parent!)
             
             if contact.bodyA.node!.name == "bullet" {
                 makeEnemyDestroyedExplosion(poofPoint)
@@ -508,7 +544,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    func didEndContact(contact: SKPhysicsContact) {
+    func didEnd(_ contact: SKPhysicsContact) {
         //
     }
     
@@ -526,12 +562,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Touch events
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        /* Called when a touch begins */
         
         // Check all touches
         for touch in touches {
-            let location = touch.locationInNode(sceneCamera)
+            let location = touch.location(in: sceneCamera)
             if location.x < 0 {
                 // This touch was on the left side of the screen
                 touchDown = true
@@ -545,11 +581,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch ends */
         // Check all touches
         for touch in touches {
-            let location = touch.locationInNode(sceneCamera)
+            let location = touch.location(in: sceneCamera)
             if location.x < 0 {
                 // This touch was on the left side of the screen
                 touchDown = false
@@ -569,7 +605,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Update
     var lastUpdateTime: CFTimeInterval = 0
     
-    override func update(currentTime: CFTimeInterval) {
+    override func update(_ currentTime: TimeInterval) {
         /* Called before each frame is rendered */
         
         var deltaTime: CFTimeInterval = currentTime - lastUpdateTime
@@ -635,7 +671,7 @@ extension GameScene {
      
     */
     
-    func makeCoinBlock(node: SKNode) {
+    func makeCoinBlock(_ node: SKNode) {
         let blockNode = SKNode()
         blockNode.name = "coinblock"
         

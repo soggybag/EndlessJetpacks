@@ -43,12 +43,12 @@ class Ground: SKNode {
         for i in 0 ..< groundNodes.count {
             let node = groundNodes[i]
             addChild(node)
-            node.color = UIColor.brownColor()
+            node.color = UIColor.brown
             let w = size.width / 3
             let h = size.height
             node.size = CGSize(width: w, height: h)
             node.position = CGPoint(x: CGFloat(i) * 3 + w / 2, y: h / 2)
-            
+            // node.anchorPoint = CGPoint(x: 0, y: 0)
         }
     }
     
