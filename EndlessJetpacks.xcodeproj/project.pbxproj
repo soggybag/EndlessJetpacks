@@ -126,6 +126,7 @@
 				TargetAttributes = {
 					D8EA557C1D22EEE8003979E3 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 753UQ7TNXJ;
 					};
 				};
 			};
@@ -289,10 +290,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 753UQ7TNXJ;
 				INFOPLIST_FILE = EndlessRunner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.webdevils.EndlessJetpacks;
 				PRODUCT_NAME = EndlessJetpacks;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -300,10 +304,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 753UQ7TNXJ;
 				INFOPLIST_FILE = EndlessRunner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.webdevils.EndlessJetpacks;
 				PRODUCT_NAME = EndlessJetpacks;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

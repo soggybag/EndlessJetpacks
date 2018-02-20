@@ -15,15 +15,15 @@ import Foundation
 // These physics categories are also used to generate collisions
 // and contacts in an easy and intuitive way, see comments below.
 struct PhysicsCategory {
-    static let None:    UInt32 = 0          // 0000000
-    static let Player:  UInt32 = 0b1        // 0000001    00001
-    static let Block:   UInt32 = 0b10       // 0000010
-    static let Coin:    UInt32 = 0b100      // 0000100    00100
-    static let Floor:   UInt32 = 0b1000     // 0001000    00101
-    static let Enemy:   UInt32 = 0b10000    // 0010000
-    static let Bullet:  UInt32 = 0b100000   // 0100000
-    static let Ceiling: UInt32 = 0b1000000  // 1000000
-    // 00000000000000000000000000000000
+  static let None:    UInt32 = 0          // 0000000
+  static let Player:  UInt32 = 0b1        // 0000001    00001
+  static let Block:   UInt32 = 0b10       // 0000010
+  static let Coin:    UInt32 = 0b100      // 0000100    00100
+  static let Floor:   UInt32 = 0b1000     // 0001000    00101
+  static let Enemy:   UInt32 = 0b10000    // 0010000
+  static let Bullet:  UInt32 = 0b100000   // 0100000
+  static let Ceiling: UInt32 = 0b1000000  // 1000000
+  // 00000000000000000000000000000000
 }
 
 // categoryBitMask -

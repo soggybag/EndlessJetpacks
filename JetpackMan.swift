@@ -9,24 +9,24 @@
 import SpriteKit
 
 class JetpackMan: SKSpriteNode {
+  
+  func walk() {
+    let textures = [
+      SKTexture(imageNamed: "walk-1"),
+      SKTexture(imageNamed: "walk-2"),
+      SKTexture(imageNamed: "walk-3"),
+      SKTexture(imageNamed: "walk-4")
+    ]
+    let walkCycle = SKAction.animate(with: textures, timePerFrame: 0.2)
+    let walkForever = SKAction.repeatForever(walkCycle)
+    run(walkForever)
+  }
+  
+  func run() {
     
-    func walk() {
-        let textures = [
-            SKTexture(imageNamed: "walk-1"),
-            SKTexture(imageNamed: "walk-2"),
-            SKTexture(imageNamed: "walk-3"),
-            SKTexture(imageNamed: "walk-4")
-        ]
-        let walkCycle = SKAction.animateWithTextures(textures, timePerFrame: 0.2)
-        let walkForever = SKAction.repeatActionForever(walkCycle)
-        runAction(walkForever)
-    }
+  }
+  
+  func fly() {
     
-    func run() {
-        
-    }
-    
-    func fly() {
-        
-    }
+  }
 }
