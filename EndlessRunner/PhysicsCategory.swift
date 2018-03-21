@@ -21,9 +21,9 @@ struct PhysicsCategory {
   static let Coin:    UInt32 = 0b100      // 0000100    00100
   static let Floor:   UInt32 = 0b1000     // 0001000    00101
   static let Enemy:   UInt32 = 0b10000    // 0010000
-  static let Bullet:  UInt32 = 0b100000   // 0100000
-  static let Ceiling: UInt32 = 0b1000000  // 1000000
-  // 00000000000000000000000000000000
+  static let Bullet:  UInt32 = 0b100000   // 0100000   0001000
+  static let Ceiling: UInt32 = 0b1000000  // 1000000   1000000
+  // 00000000000000000000000000000000                  1001000
 }
 
 // categoryBitMask -

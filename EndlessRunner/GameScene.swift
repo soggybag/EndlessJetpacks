@@ -458,6 +458,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
     
+    switch collision {
+    case PhysicsCategory.Block | PhysicsCategory.Player:
+      print("*** Player Hit Block ***")
+    case PhysicsCategory.Coin | PhysicsCategory.Player:
+      print("*** Player Hit Coin ***")
+    default:
+      print("Hit something else")
+    }
+    
     if collision == PhysicsCategory.Block | PhysicsCategory.Player {
       // MARK: Block hits Player
       print("*** Player Hit Block ***")
